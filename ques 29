@@ -1,0 +1,47 @@
+#include <stdio.h>
+#define MAX_PARTITIONS 10
+int partitions[MAX_PARTITIONS]; 
+int num_partitions = 0; 
+void init_partitions() {
+    partitions[0] = 40; 
+    partitions[1] = 10; 
+    partitions[2] = 30; 
+    partitions[3] = 60; 
+    num_partitions = 4;
+}
+int first_fit(int size) {
+    int i;
+    for (i = 0; i < num_partitions; i++) {
+        if (partitions[i] >= size) { 
+            partitions[i] -= size; 
+            return i; 
+        }
+    }
+    return -1; 
+}
+void print_partitions() {
+    int i;
+    for (i = 0; i < num_partitions; i++) {
+        printf("%d KB ", partitions[i]);
+    }
+    printf("\n");
+}
+int main() {
+    init_partitions();
+    printf("Memory partitions: ");
+    print_partitions();
+    int sizes[] = {100, 50, 30, 120, 35};
+    int num_sizes = sizeof(sizes) / sizeof(int);
+    int i;
+    for (i = 0; i < num_sizes; i++) {
+        int size = sizes[i];
+        int partition = first_fit(size);
+        if (partition == -1) {
+            printf("Error: Not enough memory for process of size %d KB.\n", size);
+        } else {
+            printf("Allocated %d KB in partition %d. Memory partitions: ", size, partition);
+            print_partitions();
+        }
+    }   
+    return 0;
+}
