@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+#define NUM_THREADS 5
+#define NUM_SEMAPHORES 1
+sem_t semaphores[NUM_SEMAPHORES];
+pthread_t threads[NUM_THREADS];
+void* threadFunction(void* threadID) {
+    int id = *(int*)threadID;
+    printf("Thread %d waiting on semaphore...\n", id);
+    sem_wait(&semaphores[0]);
+    printf("Thread %d got the semaphore!\n", id);
+    sem_post(&semaphores[0]);   
+    pthread_exit(NULL);
+}
+int main() {
+    int threadIDs[NUM_THREADS];
+    int i;
+    sem_init(&semaphores[0], 0, 4);
+    for (i = 0; i < NUM_THREADS; i++) {
+        threadIDs[i] = i;
+        pthread_create(&threads[i], NULL, threadFunction, (void*)&threadIDs[i]);
+    }
+    for (i = 0; i < NUM_THREADS; i++) {
+        pthread_join(threads[i], NULL);
+    }
+    sem_destroy(&semaphores[0]);   
+    return 0;
+}
